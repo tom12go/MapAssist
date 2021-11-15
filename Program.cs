@@ -31,11 +31,15 @@ namespace MapAssist
         [STAThread]
         static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             using (IKeyboardMouseEvents globalHook = Hook.GlobalEvents())
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new Overlay(globalHook));
+                using (var overlay = new Overlay(globalHook))
+                {
+                    overlay.Run();
+                }
             }
         }
     }
