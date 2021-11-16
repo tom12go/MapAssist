@@ -18,6 +18,7 @@
  **/
 
 using System;
+using System.Threading;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
 
@@ -34,13 +35,43 @@ namespace MapAssist
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (IKeyboardMouseEvents globalHook = Hook.GlobalEvents())
+            try
             {
-                using (var overlay = new Overlay(globalHook))
+                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+                Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+                using (IKeyboardMouseEvents globalHook = Hook.GlobalEvents())
                 {
-                    overlay.Run();
+                    using (var overlay = new Overlay(globalHook))
+                    {
+                        overlay.Run();
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                ProcessException(e);
+            }
+        }
+
+        private static void ProcessException(Exception e)
+        {
+            var message = e.Message + Environment.NewLine + Environment.NewLine + e.StackTrace;
+
+            MessageBox.Show(message, "MapAssist Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            Application.Exit();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            ProcessException((Exception) e.ExceptionObject);
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            ProcessException(e.Exception);
         }
     }
 }
