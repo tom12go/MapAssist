@@ -130,6 +130,11 @@ namespace MapAssist
 
             gfx.ClearScene();
 
+            if (_compositor != null && _currentGameData != null)
+            {
+                _gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
+            }
+
             if (_gamemap != null)
             {
                 lock (_gamemap)
@@ -280,11 +285,6 @@ namespace MapAssist
                 }
 
                 _currentGameData = gameData;
-
-                if (_compositor != null && _currentGameData != null)
-                {
-                    _gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
-                }
 
                 if (ShouldHideMap())
                 {
