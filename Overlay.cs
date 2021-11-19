@@ -41,6 +41,7 @@ namespace MapAssist
         private Timer _timer;
         private GameData _currentGameData;
         private Compositor _compositor;
+        private readonly object _compositorLock = new object(); 
         private AreaData _areaData;
         private MapApi _mapApi;
         private bool _show = true;
@@ -120,7 +121,13 @@ namespace MapAssist
 
             if (_compositor != null && _currentGameData != null)
             {
-                System.Drawing.Image gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
+                System.Drawing.Image gamemap;
+
+                lock (_compositorLock)
+                {
+                    gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
+                }
+
                 var anchor = new Point(0, 0);
 
                 if (Map.OverlayMode)
@@ -156,7 +163,17 @@ namespace MapAssist
                             break;
                     }
 
-                    System.Drawing.Point playerPosInArea = _currentGameData.PlayerPosition.OffsetFrom(_areaData.Origin).OffsetFrom(_compositor.CropOffset);
+                    var cropOffset = new System.Drawing.Point(); ;
+
+                    lock (_compositorLock)
+                    {
+                        if (_compositor != null)
+                        {
+                            cropOffset = _compositor.CropOffset;
+                        }
+                    }
+
+                    System.Drawing.Point playerPosInArea = _currentGameData.PlayerPosition.OffsetFrom(_areaData.Origin).OffsetFrom(cropOffset);
 
                     var playerPos = new Vector2(playerPosInArea.X, playerPosInArea.Y);
                     Vector2 Transform(Vector2 p) =>
@@ -256,11 +273,18 @@ namespace MapAssist
                         {
                             _areaData = _mapApi.GetMapData(gameData.Area);
                             List<PointOfInterest> pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
-                            _compositor = new Compositor(_areaData, pointsOfInterest);
+
+                            lock (_compositorLock)
+                            {
+                                _compositor = new Compositor(_areaData, pointsOfInterest);
+                            }
                         }
                         else
                         {
-                            _compositor = null;
+                            lock (_compositorLock)
+                            {
+                                _compositor = null;
+                            }
                         }
                     }
                 }
