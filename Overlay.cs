@@ -57,7 +57,6 @@ namespace MapAssist
                 IsVisible = false
             };
 
-            _window.DestroyGraphics += _window_DestroyGraphics;
             _window.DrawGraphics += _window_DrawGraphics;
             _window.SetupGraphics += _window_SetupGraphics;
 
@@ -111,11 +110,6 @@ namespace MapAssist
             Map.InitMapColors();
 
             _timer = new Timer(UpdateMap_Tick, new AutoResetEvent(false), Map.UpdateTime, Map.UpdateTime);
-        }
-
-        private void _window_DestroyGraphics(object sender, DestroyGraphicsEventArgs e)
-        {
-            // dispose things
         }
 
         private void _window_DrawGraphics(object sender, DrawGraphicsEventArgs e)
