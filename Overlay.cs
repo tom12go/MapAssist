@@ -274,9 +274,11 @@ namespace MapAssist
                             _areaData = _mapApi.GetMapData(gameData.Area);
                             List<PointOfInterest> pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
 
+                            var compositor = new Compositor(_areaData, pointsOfInterest);
+
                             lock (_compositorLock)
                             {
-                                _compositor = new Compositor(_areaData, pointsOfInterest);
+                                _compositor = compositor;
                             }
                         }
                         else
