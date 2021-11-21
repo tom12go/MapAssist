@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Numerics;
-using System.Threading;
 
 namespace MapAssist
 {
@@ -38,14 +37,11 @@ namespace MapAssist
 
         private System.Windows.Forms.NotifyIcon _trayIcon;
 
-        private Timer _timer;
         private GameData _currentGameData;
         private Compositor _compositor;
-        private readonly object _compositorLock = new object(); 
         private AreaData _areaData;
         private MapApi _mapApi;
         private bool _show = true;
-        private int _isBusy = 0;
 
         private readonly Dictionary<string, SolidBrush> _brushes;
         private readonly Dictionary<string, Font> _fonts;
@@ -64,7 +60,7 @@ namespace MapAssist
             {
                 FPS = 60,
                 IsTopmost = true,
-                IsVisible = false
+                IsVisible = true
             };
 
             _window.DrawGraphics += _window_DrawGraphics;
@@ -127,32 +123,35 @@ namespace MapAssist
             if (e.RecreateResources) return;
 
             _fonts["consolas"] = gfx.CreateFont("Consolas", 14);
-
-            _timer = new Timer(UpdateMap_Tick, new AutoResetEvent(false), Map.UpdateTime, Map.UpdateTime);
         }
 
         private void _window_DrawGraphics(object sender, DrawGraphicsEventArgs e)
         {
             var gfx = e.Graphics;
 
+            UpdateGameData();
+
             gfx.ClearScene();
+
+            if (ShouldHideMap())
+            {
+                return;
+            }
 
             if (_compositor != null && _currentGameData != null)
             {
-                System.Drawing.Image gamemap;
-
-                var padding = 16;
-                var infoText = new System.Text.StringBuilder()
-                    .Append("FPS: ").Append(gfx.FPS.ToString().PadRight(padding))
-                    .Append("DeltaTime: ").Append(e.DeltaTime.ToString().PadRight(padding))
-                    .ToString();
-
-                gfx.DrawText(_fonts["consolas"], _brushes["green"], 58, 20, infoText);
-
-                lock (_compositorLock)
+                if (Map.ShowOverlayFPS)
                 {
-                    gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
+                    var padding = 16;
+                    var infoText = new System.Text.StringBuilder()
+                        .Append("FPS: ").Append(gfx.FPS.ToString().PadRight(padding))
+                        .Append("DeltaTime: ").Append(e.DeltaTime.ToString().PadRight(padding))
+                        .ToString();
+
+                    gfx.DrawText(_fonts["consolas"], _brushes["green"], 58, 20, infoText);
                 }
+
+                var gamemap = _compositor.Compose(_currentGameData, !Map.OverlayMode);
 
                 var anchor = new Point(0, 0);
 
@@ -191,12 +190,9 @@ namespace MapAssist
 
                     var cropOffset = new System.Drawing.Point(); ;
 
-                    lock (_compositorLock)
+                    if (_compositor != null)
                     {
-                        if (_compositor != null)
-                        {
-                            cropOffset = _compositor.CropOffset;
-                        }
+                        cropOffset = _compositor.CropOffset;
                     }
 
                     System.Drawing.Point playerPosInArea = _currentGameData.PlayerPosition.OffsetFrom(_areaData.Origin).OffsetFrom(cropOffset);
@@ -271,68 +267,42 @@ namespace MapAssist
             _window.Join();
         }
 
-        private void UpdateMap_Tick(object stateInfo)
+        private void UpdateGameData()
         {
-            if (Interlocked.CompareExchange(ref _isBusy, 1, 0) == 1)
-            {
-                return;
-            }
+            GameData gameData = GameMemory.GetGameData();
 
-            var autoEvent = (AutoResetEvent)stateInfo;
-
-            try
+            if (gameData != null)
             {
-                GameData gameData = GameMemory.GetGameData();
-                if (gameData != null)
+                if (gameData.HasGameChanged(_currentGameData))
                 {
-                    if (gameData.HasGameChanged(_currentGameData))
-                    {
-                        Console.WriteLine($"Game changed: {gameData}");
-                        _mapApi?.Dispose();
-                        _mapApi = new MapApi(MapApi.Client, gameData.Difficulty, gameData.MapSeed);
-                    }
-
-                    if (gameData.HasMapChanged(_currentGameData))
-                    {
-                        Console.WriteLine($"Area changed: {gameData.Area}");
-
-                        Compositor compositor = null;
-
-                        if (gameData.Area != Area.None)
-                        {
-                            _areaData = _mapApi.GetMapData(gameData.Area);
-                            var pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
-                            compositor = new Compositor(_areaData, pointsOfInterest);
-                        }
-
-                        lock (_compositorLock)
-                        {
-                            _compositor = compositor;
-                        }
-                    }
+                    Console.WriteLine($"Game changed: {gameData}");
+                    _mapApi?.Dispose();
+                    _mapApi = new MapApi(MapApi.Client, gameData.Difficulty, gameData.MapSeed);
                 }
 
-                _currentGameData = gameData;
+                if (gameData.HasMapChanged(_currentGameData))
+                {
+                    Console.WriteLine($"Area changed: {gameData.Area}");
 
-                if (ShouldHideMap())
-                {
-                    _window.Hide();
-                }
-                else
-                {
-                    if (!_window.IsVisible)
+                    Compositor compositor = null;
+
+                    if (gameData.Area != Area.None)
                     {
-                        _window.Show();
-                        if (Map.AlwaysOnTop) _window.PlaceAbove(_currentGameData.MainWindowHandle);
+                        _areaData = _mapApi.GetMapData(gameData.Area);
+                        var pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
+                        compositor = new Compositor(_areaData, pointsOfInterest);
                     }
+
+                    _compositor = compositor;
                 }
             }
-            finally
-            {
-                _isBusy = 0;
-            }
 
-            autoEvent.Set();
+            _currentGameData = gameData;
+
+            if (!ShouldHideMap() && !_window.IsVisible)
+            {
+                if (Map.AlwaysOnTop) _window.PlaceAbove(_currentGameData.MainWindowHandle);
+            }
         }
 
         private bool ShouldHideMap()
@@ -378,13 +348,12 @@ namespace MapAssist
 
         private void _window_DestroyGraphics(object sender, DestroyGraphicsEventArgs e)
         {
-            _timer?.Dispose();
             _mapApi?.Dispose();
 
-            lock (_compositorLock)
-            {
-                _compositor = null;
-            }
+            foreach (var pair in _brushes) pair.Value.Dispose();
+            foreach (var pair in _fonts) pair.Value.Dispose();
+
+            _compositor = null;
         }
 
         private bool disposedValue;
