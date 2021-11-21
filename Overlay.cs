@@ -47,11 +47,20 @@ namespace MapAssist
         private bool _show = true;
         private int _isBusy = 0;
 
+        private readonly Dictionary<string, SolidBrush> _brushes;
+        private readonly Dictionary<string, Font> _fonts;
+
         public Overlay(IKeyboardMouseEvents keyboardMouseEvents)
         {
-            var gfx = new Graphics();
+            var gfx = new Graphics()
+            {
+                MeasureFPS = true
+            };
 
-            _window = new GraphicsWindow(0, 0, 1, 1)
+            _brushes = new Dictionary<string, SolidBrush>();
+            _fonts = new Dictionary<string, Font>();
+
+            _window = new GraphicsWindow(0, 0, 1, 1, gfx)
             {
                 FPS = 60,
                 IsTopmost = true,
@@ -60,6 +69,7 @@ namespace MapAssist
 
             _window.DrawGraphics += _window_DrawGraphics;
             _window.SetupGraphics += _window_SetupGraphics;
+            _window.DestroyGraphics += _window_DestroyGraphics;
 
             keyboardMouseEvents.KeyPress += (_, args) =>
             {
@@ -108,7 +118,15 @@ namespace MapAssist
 
         private void _window_SetupGraphics(object sender, SetupGraphicsEventArgs e)
         {
+            var gfx = e.Graphics;
+
             Map.InitMapColors();
+
+            _brushes["green"] = gfx.CreateSolidBrush(0, 255, 0);
+
+            if (e.RecreateResources) return;
+
+            _fonts["consolas"] = gfx.CreateFont("Consolas", 14);
 
             _timer = new Timer(UpdateMap_Tick, new AutoResetEvent(false), Map.UpdateTime, Map.UpdateTime);
         }
@@ -122,6 +140,14 @@ namespace MapAssist
             if (_compositor != null && _currentGameData != null)
             {
                 System.Drawing.Image gamemap;
+
+                var padding = 16;
+                var infoText = new System.Text.StringBuilder()
+                    .Append("FPS: ").Append(gfx.FPS.ToString().PadRight(padding))
+                    .Append("DeltaTime: ").Append(e.DeltaTime.ToString().PadRight(padding))
+                    .ToString();
+
+                gfx.DrawText(_fonts["consolas"], _brushes["green"], 58, 20, infoText);
 
                 lock (_compositorLock)
                 {
@@ -269,24 +295,19 @@ namespace MapAssist
                     if (gameData.HasMapChanged(_currentGameData))
                     {
                         Console.WriteLine($"Area changed: {gameData.Area}");
+
+                        Compositor compositor = null;
+
                         if (gameData.Area != Area.None)
                         {
                             _areaData = _mapApi.GetMapData(gameData.Area);
-                            List<PointOfInterest> pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
-
-                            var compositor = new Compositor(_areaData, pointsOfInterest);
-
-                            lock (_compositorLock)
-                            {
-                                _compositor = compositor;
-                            }
+                            var pointsOfInterest = PointOfInterestHandler.Get(_mapApi, _areaData);
+                            compositor = new Compositor(_areaData, pointsOfInterest);
                         }
-                        else
+
+                        lock (_compositorLock)
                         {
-                            lock (_compositorLock)
-                            {
-                                _compositor = null;
-                            }
+                            _compositor = compositor;
                         }
                     }
                 }
@@ -355,14 +376,23 @@ namespace MapAssist
             Dispose(false);
         }
 
+        private void _window_DestroyGraphics(object sender, DestroyGraphicsEventArgs e)
+        {
+            _timer?.Dispose();
+            _mapApi?.Dispose();
+
+            lock (_compositorLock)
+            {
+                _compositor = null;
+            }
+        }
+
         private bool disposedValue;
 
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
-                _timer?.Dispose();
-                _mapApi?.Dispose();
                 _window.Dispose();
 
                 disposedValue = true;
