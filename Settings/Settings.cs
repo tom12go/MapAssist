@@ -96,7 +96,7 @@ namespace MapAssist.Settings
         public static MapPosition Position =
             (MapPosition)Enum.Parse(typeof(MapPosition), ConfigurationManager.AppSettings["MapPosition"], true);
 
-        public static int UpdateTime = Convert.ToInt16(ConfigurationManager.AppSettings["UpdateTime"]);
+        public static bool ShowOverlayFPS = Convert.ToBoolean(ConfigurationManager.AppSettings["ShowOverlayFPS"]);
         public static bool Rotate = Convert.ToBoolean(ConfigurationManager.AppSettings["Rotate"]);
         public static char ToggleKey = Convert.ToChar(ConfigurationManager.AppSettings["ToggleKey"]);
         public static char ZoomInKey = Convert.ToChar(ConfigurationManager.AppSettings["ZoomInKey"]);
