@@ -165,6 +165,10 @@ namespace MapAssist
                 var blackBarWidth = screenW > 2880 ? (screenW - 2880) / 4 : 0;
                 var textXOffset = blackBarWidth + (int)(screenW * .06f);
 
+                var fontSize = MapAssistConfiguration.Loaded.ItemLog.LabelFontSize;
+                var fontHeight = (fontSize + fontSize / 2);
+                var fontOffset = fontHeight;
+
                 if (MapAssistConfiguration.Loaded.RenderingConfiguration.ShowOverlayFPS)
                 {
                     var padding = 16;
@@ -173,11 +177,13 @@ namespace MapAssist
                         .Append("DeltaTime: ").Append(e.DeltaTime.ToString().PadRight(padding))
                         .ToString();
 
-                    gfx.DrawText(_fonts["consolas"], _brushes["green"], textXOffset, 20, infoText);
+                    gfx.DrawText(_fonts["consolas"], _brushes["green"], textXOffset, fontOffset, infoText);
+
+                    fontOffset += fontHeight;
                 }
 
-                var fontSize = MapAssistConfiguration.Loaded.ItemLog.LabelFontSize;
-                var fontHeight = (fontSize + fontSize / 2);
+                gfx.DrawText(_fonts["consolas"], _brushes["red"], textXOffset, fontOffset, "Game IP: " + _currentGameData.GameIP);
+                fontOffset += fontHeight + 5;
 
                 for (var i = 0; i < Items.CurrentItemLog.Count; i++)
                 {
@@ -217,7 +223,7 @@ namespace MapAssist
                             break;
                     }
 
-                    gfx.DrawText(_fonts["itemlog"], color, textXOffset, (fontHeight * 2) + (i * fontHeight), itemLabelExtra + itemSpecialName + itemBaseName);
+                    gfx.DrawText(_fonts["itemlog"], color, textXOffset, fontOffset + (i * fontHeight), itemLabelExtra + itemSpecialName + itemBaseName);
                 }
 
                 if (!_show || Array.Exists(MapAssistConfiguration.Loaded.HiddenAreas, element => element == _currentGameData.Area) || (MapAssistConfiguration.Loaded.RenderingConfiguration.ToggleViaInGameMap && !_currentGameData.MapShown) || (_currentGameData.Area == Area.None))
