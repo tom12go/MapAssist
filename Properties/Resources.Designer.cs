@@ -69,5 +69,13 @@ namespace MapAssist.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream ching {
+            get {
+                return ResourceManager.GetStream("ching", resourceCulture);
+            }
+        }
     }
 }

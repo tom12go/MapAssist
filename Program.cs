@@ -19,8 +19,12 @@
 
 using System;
 using System.Threading;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Gma.System.MouseKeyHook;
+using MapAssist.Files;
+using MapAssist.Settings;
+using Newtonsoft.Json;
 
 namespace MapAssist
 {
@@ -32,20 +36,24 @@ namespace MapAssist
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-
             try
             {
-                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-                Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-                AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-                using (IKeyboardMouseEvents globalHook = Hook.GlobalEvents())
+                var configurationOk = LoadMainConfiguration() && LoadLootLogConfiguration();
+                if (configurationOk)
                 {
-                    using (var overlay = new Overlay(globalHook))
+                    using (IKeyboardMouseEvents globalHook = Hook.GlobalEvents())
                     {
-                        overlay.Run();
+                        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+                        Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+                        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+
+                        using (var overlay = new Overlay(globalHook))
+                        {
+                            overlay.Run();
+                        }
                     }
                 }
             }
@@ -72,6 +80,48 @@ namespace MapAssist
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
             ProcessException(e.Exception);
+        }
+
+        private static bool LoadMainConfiguration()
+        {
+            var configurationOk = false;
+            try
+            {
+                MapAssistConfiguration.Load();
+                configurationOk = true;
+            }
+            catch (YamlDotNet.Core.YamlException e)
+            {
+                MessageBox.Show(e.Message, "Yaml parsing error occurred. Invalid MapAssist configuration.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "General error occurred!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return configurationOk;
+        }
+
+        private static bool LoadLootLogConfiguration()
+        {
+            var configurationOk = false;
+            try
+            {
+                LootLogConfiguration.Load();
+                configurationOk = true;
+            }
+            catch (YamlDotNet.Core.YamlException e)
+            {
+                MessageBox.Show(e.Message, "Yaml parsing error occurred. Invalid loot filter configuration.",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "General error occurred!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return configurationOk;
         }
     }
 }

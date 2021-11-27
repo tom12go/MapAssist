@@ -106,8 +106,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files\ConfigurationParser.cs" />
+    <Compile Include="Files\FileManager.cs" />
     <Compile Include="Helpers\GameManager.cs" />
+    <Compile Include="Helpers\LootFilter.cs" />
     <Compile Include="Helpers\ProcessContext.cs" />
+    <Compile Include="Helpers\YamlConverters.cs" />
     <Compile Include="Interfaces\IUpdatable.cs" />
     <Compile Include="Overlay.cs" />
     <Compile Include="Helpers\Extensions.cs" />
@@ -121,9 +125,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Settings\LootLogConfiguration.cs" />
+    <Compile Include="Settings\MapAssistConfiguration.cs" />
     <Compile Include="Structs\Act.cs" />
     <Compile Include="Structs\ActMisc.cs" />
     <Compile Include="Structs\Inventory.cs" />
+    <Compile Include="Structs\Items.cs" />
     <Compile Include="Structs\UiSettings.cs" />
     <Compile Include="Structs\Level.cs" />
     <Compile Include="Structs\MonsterData.cs" />
@@ -132,6 +139,7 @@
     <Compile Include="Structs\RoomEx.cs" />
     <Compile Include="Structs\UnitAny.cs" />
     <Compile Include="Structs\UnitHashTable.cs" />
+    <Compile Include="Types\Items.cs" />
     <Compile Include="Types\Stats.cs" />
     <Compile Include="Types\UiSettings.cs" />
     <Compile Include="Types\RoomEx.cs" />
@@ -153,15 +161,11 @@
     <Compile Include="Types\RawAreaData.cs" />
     <Compile Include="Settings\MapPosition.cs" />
     <Compile Include="Settings\PointOfInterestRendering.cs" />
-    <Compile Include="Settings\Settings.cs" />
     <Compile Include="Settings\Shape.cs" />
     <Compile Include="Settings\Utils.cs" />
     <Compile Include="Types\UnitAny.cs" />
     <Compile Include="Types\UnitType.cs" />
     <None Include="Resources\Icon1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
@@ -185,6 +189,19 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
+    <PackageReference Include="YamlDotNet">
+      <Version>11.2.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon1.ico" />
+    <None Include="ItemFilter.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ching.wav" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
