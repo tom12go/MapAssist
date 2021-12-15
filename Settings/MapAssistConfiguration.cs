@@ -41,9 +41,6 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "UpdateTime", ApplyNamingConventions = false)]
         public int UpdateTime { get; set; }
         
-        [YamlMember(Alias = "D2Path", ApplyNamingConventions = false)]
-        public string D2Path { get; set; }
-
         [YamlMember(Alias = "HuntingIP", ApplyNamingConventions = false)]
         public string HuntingIP { get; set; }
 
@@ -68,6 +65,9 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "HotkeyConfiguration", ApplyNamingConventions = false)]
         public HotkeyConfiguration HotkeyConfiguration { get; set; }
 
+        [YamlMember(Alias = "ApiConfiguration", ApplyNamingConventions = false)]
+        public ApiConfiguration ApiConfiguration { get; set; }
+
         [YamlMember(Alias = "GameInfo", ApplyNamingConventions = false)]
         public GameInfoConfiguration GameInfo { get; set; }
 
@@ -84,6 +84,19 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "Border", ApplyNamingConventions = false)]
         public Color? Border { get; set; }
     }
+
+    public class ApiConfiguration
+    {
+        [YamlMember(Alias = "Type", ApplyNamingConventions = false)]
+        public string Type { get; set; }
+
+        [YamlMember(Alias = "Endpoint", ApplyNamingConventions = false)]
+        public string Endpoint { get; set; }
+
+        [YamlMember(Alias = "Token", ApplyNamingConventions = false)]
+        public string Token { get; set; }
+    }
+
 
     public class MapConfiguration
     {

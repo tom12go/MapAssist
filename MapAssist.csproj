@@ -121,6 +121,7 @@
     <Compile Include="Helpers\MapApi.cs" />
     <Compile Include="Helpers\Compositor.cs" />
     <Compile Include="Helpers\WindowsExternal.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -160,7 +161,6 @@
     <Compile Include="Types\GameObject.cs" />
     <Compile Include="Types\AreaData.cs" />
     <Compile Include="Helpers\GameMemory.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Npc.cs" />
     <Compile Include="Types\Path.cs" />
@@ -520,9 +520,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\COLD.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\piped" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
