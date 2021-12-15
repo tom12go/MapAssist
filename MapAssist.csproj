@@ -522,6 +522,12 @@
   <ItemGroup>
     <None Include="Resources\COLD.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\D2ToolboxCore\D2ToolboxCore.csproj">
+      <Project>{7509922a-7e82-44a9-a588-8e1a8d1ebbf9}</Project>
+      <Name>D2ToolboxCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)Config.yaml" "$(TargetDir)" /Y</PostBuildEvent>
