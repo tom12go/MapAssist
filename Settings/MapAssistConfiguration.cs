@@ -18,19 +18,18 @@
  **/
 
 using System.Drawing;
-using MapAssist.Files;
 using MapAssist.Settings;
 using MapAssist.Types;
 using YamlDotNet.Serialization;
+using D2ToolboxCore.Files;
 
 namespace MapAssist.Settings
 {
-    public class MapAssistConfiguration
+    public class MapAssistConfiguration: Configuration
     {
-        public static MapAssistConfiguration Loaded { get; set; }
-        public static void Load()
+        public static MapAssistConfiguration Load(string fileName)
         {
-            Loaded = ConfigurationParser<MapAssistConfiguration>.ParseConfigurationMain(Properties.Resources.Config, $"./Config.yaml");
+            return ConfigurationParser<MapAssistConfiguration>.ParseConfigurationWithOverride(Properties.Resources.Config, fileName);
         }
 
         public void Save()
@@ -70,9 +69,6 @@ namespace MapAssist.Settings
 
         [YamlMember(Alias = "GameInfo", ApplyNamingConventions = false)]
         public GameInfoConfiguration GameInfo { get; set; }
-
-        [YamlMember(Alias = "ItemLog", ApplyNamingConventions = false)]
-        public ItemLogConfiguration ItemLog { get; set; }
     }
 
     public class MapColorConfiguration
@@ -208,25 +204,3 @@ public class GameInfoConfiguration
     public bool ShowOverlayFPS { get; set; }
 }
 
-public class ItemLogConfiguration
-{
-    [YamlMember(Alias = "Enabled", ApplyNamingConventions = false)]
-    public bool Enabled { get; set; }
-
-    [YamlMember(Alias = "FilterFileName", ApplyNamingConventions = false)]
-    public string FilterFileName { get; set; }
-
-    [YamlMember(Alias = "PlaySoundOnDrop", ApplyNamingConventions = false)]
-    public bool PlaySoundOnDrop { get; set; }
-
-    [YamlMember(Alias = "DisplayForSeconds", ApplyNamingConventions = false)]
-    public double DisplayForSeconds { get; set; }
-    [YamlMember(Alias = "SoundFile", ApplyNamingConventions = false)]
-    public string SoundFile { get; set; }
-
-    [YamlMember(Alias = "LabelFont", ApplyNamingConventions = false)]
-    public string LabelFont { get; set; }
-
-    [YamlMember(Alias = "LabelFontSize", ApplyNamingConventions = false)]
-    public int LabelFontSize { get; set; }
-}

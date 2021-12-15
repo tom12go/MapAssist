@@ -6,24 +6,34 @@ using System.Threading.Tasks;
 using GameOverlay.Drawing;
 using Graphics = GameOverlay.Drawing.Graphics;
 using Size = System.Drawing.Size;
+using D2ToolboxCore;
+using D2ToolboxCore.Files;
 using MapAssist.Settings;
 using MapAssist.Types;
 using MapAssist.Helpers;
-
+using GameData = MapAssist.Types.GameData;
 
 namespace MapAssist
 {
-    class MapAssist : IDisposable
+    public class MapAssist : IDisposable
     {
+        private static MapAssistConfiguration _rootConfig;
+
+        public static void Init(string confPath)
+        {
+            _rootConfig = MapAssistConfiguration.Load(confPath);
+        }
+
         private uint _processId;
         private MapAssistConfiguration _config;
 
         public MapAssist(uint pid)
         {
             _processId = pid;
+            _config = _rootConfig.DeepClone();
         }
 
-        public void Draw(Overlay overlay, Graphics gfx, Size size)
+        public void Draw(Overlay overlay, GameProcessor processor)
         {
             return;
         }
