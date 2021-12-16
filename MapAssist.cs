@@ -45,10 +45,10 @@ namespace MapAssist
         private Compositor _compositor;
         private bool _show = true;
 
-        public MapAssist()
+        public MapAssist(string confPath)
         {
             _gameDataReader = new GameDataReader();
-            _config = MapAssistConfiguration.Loaded;
+            _config = MapAssistConfiguration.Load(confPath);
         }
 
         public void Draw(Graphics gfx, Size windowSize)
@@ -77,7 +77,8 @@ namespace MapAssist
                     switch (_config.RenderingConfiguration.Position)
                     {
                         case MapPosition.TopLeft:
-                            drawBounds = new Rectangle(PlayerIconWidth() + 40, PlayerIconWidth() + 100, 0, PlayerIconWidth() + 100 + size);
+                            var piw = PlayerIconWidth(windowSize);
+                            drawBounds = new Rectangle(piw + 40, piw + 100, 0, piw + 100 + size);
                             break;
                         case MapPosition.TopRight:
                             drawBounds = new Rectangle(0, 100, gfx.Width, 100 + size);
