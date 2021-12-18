@@ -41,18 +41,20 @@ namespace MapAssist.Types
     }
     public class Roster : IUpdatable<Roster>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pFirst;
         private List<RosterEntry> _list = new List<RosterEntry>();
         private Dictionary<uint, RosterEntry> _entriesByUnitId = new Dictionary<uint, RosterEntry>();
 
-        public Roster(IntPtr pFirst)
+        public Roster(GameManager gm, IntPtr pFirst)
         {
+            _gameManager = gm;
             _pFirst = pFirst;
             Update();
         }
         public Roster Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 var firstMember = processContext.Read<IntPtr>(_pFirst);
                 var entry = GetNewEntry(firstMember);
@@ -69,7 +71,7 @@ namespace MapAssist.Types
         }
         private RosterEntry GetNewEntry(IntPtr pAddress)
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 var member = processContext.Read<RosterMember>(pAddress);
                 var memberInfo = processContext.Read<RosterInfo>(member.pRosterInfo);

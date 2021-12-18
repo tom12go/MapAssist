@@ -27,18 +27,20 @@ namespace MapAssist.Types
 {
     public class Room : IUpdatable<Room>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pRoom = IntPtr.Zero;
         private Structs.Room _room;
 
-        public Room(IntPtr pRoom, bool update = true)
+        public Room(GameManager gm, IntPtr pRoom, bool update = true)
         {
+            _gameManager = gm;
             _pRoom = pRoom;
             if (update) { Update(); }
         }
 
         public Room Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 _room = processContext.Read<Structs.Room>(_pRoom);
             }
@@ -50,7 +52,7 @@ namespace MapAssist.Types
         {
             get
             {
-                using (var processContext = GameManager.GetProcessContext())
+                using (var processContext = _gameManager.GetProcessContext())
                 {
                     var addrBuf = new byte[8];
                     var uintBuf = new byte[4];
@@ -68,7 +70,7 @@ namespace MapAssist.Types
                         WindowsExternal.ReadProcessMemory(processContext.Handle, IntPtr.Add(_room.pRoomsNear, p * 8),
                             addrBuf, addrBuf.Length, out _);
                         var pRoom = (IntPtr)BitConverter.ToInt64(addrBuf, 0);
-                        roomList[p] = new Room(pRoom, false);
+                        roomList[p] = new Room(_gameManager, pRoom, false);
                     }
 
                     return roomList;
@@ -79,11 +81,11 @@ namespace MapAssist.Types
         public override bool Equals(object obj) => obj is Room other && Equals(other);
         public bool Equals(Room room) => _pRoom == room._pRoom;
         public override int GetHashCode() => _pRoom.GetHashCode();
-        public RoomEx RoomEx => new RoomEx(_room.pRoomEx);
+        public RoomEx RoomEx => new RoomEx(_gameManager, _room.pRoomEx);
         public uint NumRoomsNear => _room.numRoomsNear;
-        public Act Act => new Act(_room.pAct);
-        public UnitAny UnitFirst => new UnitAny(_room.pUnitFirst);
-        public Room RoomNext => new Room(_room.pRoomNext);
-        public Room RoomNextFast => new Room(_room.pRoomNext, false);
+        public Act Act => new Act(_gameManager, _room.pAct);
+        public UnitAny UnitFirst => new UnitAny(_gameManager, _room.pUnitFirst);
+        public Room RoomNext => new Room(_gameManager, _room.pRoomNext);
+        public Room RoomNextFast => new Room(_gameManager, _room.pRoomNext, false);
     }
 }

@@ -24,42 +24,22 @@ using MapAssist.Types;
 
 namespace MapAssist.Helpers
 {
-    public static class GameMemory
+    public partial  class GameManager
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        private static Dictionary<int, uint> _lastMapSeed = new Dictionary<int, uint>();
-        private static int _currentProcessId;
+        private uint _lastMapSeed = 0;
 
-        public static Dictionary<int, UnitAny> PlayerUnits = new Dictionary<int, UnitAny>();
-
-        public static GameData GetGameData()
+        public GameData GetGameData()
         {
             try
             {
-                if (!GameManager.IsGameInForeground)
+                using (var processContext = GetProcessContext())
                 {
-                    return null;
-                }
-
-                var processContext = GameManager.GetProcessContext();
-
-                if (processContext == null)
-                {
-                    return null;
-                }
-
-                using (processContext)
-                {
-                    _currentProcessId = processContext.ProcessId;
-                    var playerUnit = GameManager.PlayerUnit;
-
-                    if(!PlayerUnits.TryGetValue(_currentProcessId, out var _))
+                    if (processContext == null)
                     {
-                        PlayerUnits.Add(_currentProcessId, playerUnit);
-                    } else
-                    {
-                        PlayerUnits[_currentProcessId] = playerUnit;
+                        return null;
                     }
+
+                    var playerUnit = PlayerUnit;
 
                     if (!Equals(playerUnit, default(UnitAny)))
                     {
@@ -74,13 +54,10 @@ namespace MapAssist.Helpers
                         {
                             throw new Exception("Map seed is out of bounds.");
                         }
-                        if (!_lastMapSeed.TryGetValue(_currentProcessId, out var _))
+                        
+                        if (mapSeed != _lastMapSeed)
                         {
-                            _lastMapSeed.Add(_currentProcessId, 0);
-                        }
-                        if (mapSeed != _lastMapSeed[_currentProcessId])
-                        {
-                            _lastMapSeed[_currentProcessId] = mapSeed;
+                            _lastMapSeed = mapSeed;
                             //dispose leftover timers in this process if we started a new game
                             if(Items.ItemLogTimers.TryGetValue(_currentProcessId, out var _))
                             {
@@ -103,10 +80,10 @@ namespace MapAssist.Helpers
                             }
                         }
 
-                        var session = new Session(GameManager.GameIPOffset);
+                        var session = new Session(this, GameIPOffset);
 
-                        var menuOpen = processContext.Read<byte>(GameManager.MenuOpenOffset);
-                        var menuData = processContext.Read<Structs.MenuData>(GameManager.MenuDataOffset);
+                        var menuOpen = processContext.Read<byte>(MenuOpenOffset);
+                        var menuData = processContext.Read<Structs.MenuData>(MenuDataOffset);
 
                         var actId = playerUnit.Act.ActId;
 
@@ -131,7 +108,7 @@ namespace MapAssist.Helpers
                         GetUnits(ref monsterList, ref itemList, ref playerList, ref objectList);
                         Items.CurrentItemLog = Items.ItemLog[_currentProcessId];
 
-                        var roster = new Roster(GameManager.RosterDataOffset);
+                        var roster = new Roster(this, RosterDataOffset);
 
                         return new GameData
                         {
@@ -139,7 +116,6 @@ namespace MapAssist.Helpers
                             MapSeed = mapSeed,
                             Area = levelId,
                             Difficulty = gameDifficulty,
-                            MainWindowHandle = GameManager.MainWindowHandle,
                             PlayerName = playerUnit.Name,
                             Monsters = monsterList,
                             Items = itemList,
@@ -166,11 +142,11 @@ namespace MapAssist.Helpers
                 }
             }
 
-            GameManager.ResetPlayerUnit();
+            ResetPlayerUnit();
             return null;
         }
 
-        private static void GetUnits(ref HashSet<UnitAny> monsterList, ref HashSet<UnitAny> itemList, ref Dictionary<uint, UnitAny> playerList, ref HashSet<UnitAny> objectList)
+        private void GetUnits(ref HashSet<UnitAny> monsterList, ref HashSet<UnitAny> itemList, ref Dictionary<uint, UnitAny> playerList, ref HashSet<UnitAny> objectList)
         {
             for (var i = 0; i <= 4; i++)
             {
@@ -179,14 +155,14 @@ namespace MapAssist.Helpers
                 if(unitType == UnitType.Missile)
                 {
                     //missiles are contained in a different table
-                    unitHashTable = GameManager.UnitHashTable(128 * 8 * (i + 6));
+                    unitHashTable = UnitHashTable(128 * 8 * (i + 6));
                 } else
                 {
-                    unitHashTable = GameManager.UnitHashTable(128 * 8 * i);
+                    unitHashTable = UnitHashTable(128 * 8 * i);
                 }
                 foreach (var pUnitAny in unitHashTable.UnitTable)
                 {
-                    var unitAny = new UnitAny(pUnitAny);
+                    var unitAny = new UnitAny(this, pUnitAny);
                     while (unitAny.IsValidUnit())
                     {
                         switch (unitType)
@@ -222,7 +198,7 @@ namespace MapAssist.Helpers
             }
         }
 
-        private static void GetUnits(HashSet<Room> rooms, ref List<UnitAny> monsterList, ref List<UnitAny> itemList)
+        private void GetUnits(HashSet<Room> rooms, ref List<UnitAny> monsterList, ref List<UnitAny> itemList)
         {
             foreach (var room in rooms)
             {
@@ -251,7 +227,7 @@ namespace MapAssist.Helpers
             }
         }
 
-        private static HashSet<Room> GetRooms(Room startingRoom, ref HashSet<Room> roomsList)
+        private HashSet<Room> GetRooms(Room startingRoom, ref HashSet<Room> roomsList)
         {
             var roomsNear = startingRoom.RoomsNear;
             foreach (var roomNear in roomsNear)

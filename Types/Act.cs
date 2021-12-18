@@ -27,16 +27,18 @@ namespace MapAssist.Types
     {
         private readonly IntPtr _pAct = IntPtr.Zero;
         private Structs.Act _act;
+        private GameManager _gameManager;
 
-        public Act(IntPtr pAct)
+        public Act(GameManager gm, IntPtr pAct)
         {
+            _gameManager = gm;
             _pAct = pAct;
             Update();
         }
 
         public Act Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 _act = processContext.Read<Structs.Act>(_pAct);
             }
@@ -46,6 +48,6 @@ namespace MapAssist.Types
 
         public uint MapSeed => _act.MapSeed;
         public uint ActId => _act.ActId;
-        public ActMisc ActMisc => new ActMisc(_act.pActMisc);
+        public ActMisc ActMisc => new ActMisc(_gameManager, _act.pActMisc);
     }
 }

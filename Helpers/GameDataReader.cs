@@ -11,16 +11,27 @@ namespace MapAssist.Helpers
         private Compositor _compositor;
         private volatile GameData _gameData;
         private MapApi _mapApi;
+        private GameManager _gameManager;
+        
+        public GameDataReader(uint pid)
+        {
+            _gameManager = GameManager.AttachManagerToProcess((int)pid);
+        }
 
         public (Compositor, GameData) Get()
         {
-            var gameData = GameMemory.GetGameData();
+            if (_gameManager == null)
+            {
+                return (null, null);
+            }
+            var gameData = _gameManager.GetGameData();
 
             if (gameData != null)
             {
                 if (gameData.HasGameChanged(_gameData))
                 {
                     _log.Info($"Game changed to {gameData.Difficulty} with {gameData.MapSeed} seed");
+                    _mapApi?.Dispose();
                     _mapApi = new MapApi(gameData.Difficulty, gameData.MapSeed);
                 }
 
@@ -38,7 +49,7 @@ namespace MapAssist.Helpers
                             var pointsOfInterest = PointOfInterestHandler.Get(_mapApi, areaData, gameData);
                             _log.Info($"Found {pointsOfInterest.Count} points of interest");
 
-                            compositor = new Compositor(areaData, pointsOfInterest);
+                            compositor = new Compositor(_gameManager, areaData, pointsOfInterest);
                         }
                         else
                         {

@@ -48,8 +48,11 @@ namespace MapAssist.Types
         private Skill _skill;
         private bool _isPlayerUnit;
 
-        public UnitAny(IntPtr pUnit)
+        private readonly GameManager _gameManager;
+
+        public UnitAny(GameManager gm, IntPtr pUnit)
         {
+            _gameManager = gm;
             _pUnit = pUnit;
             Update();
         }
@@ -58,12 +61,12 @@ namespace MapAssist.Types
         {
             if (IsValidPointer())
             {
-                using (var processContext = GameManager.GetProcessContext())
+                using (var processContext = _gameManager.GetProcessContext())
                 {
                     _unitAny = processContext.Read<Structs.UnitAny>(_pUnit);
                     if (IsValidUnit())
                     {
-                        _path = new Path(_unitAny.pPath);
+                        _path = new Path(_gameManager, _unitAny.pPath);
                         if(_unitAny.pStatsListEx != IntPtr.Zero)
                         {
                             var statListStruct = processContext.Read<StatListStruct>(_unitAny.pStatsListEx);
@@ -89,13 +92,13 @@ namespace MapAssist.Types
                                 {
                                     if (IsPlayerUnit())
                                     {
-                                        _skill = new Skill(_unitAny.pSkills);
+                                        _skill = new Skill(_gameManager, _unitAny.pSkills);
                                         _stateList = GetStateList();
                                     }
                                     _name = Encoding.ASCII.GetString(processContext.Read<byte>(_unitAny.pUnitData, 16))
                                         .TrimEnd((char)0);
                                     _inventory = processContext.Read<Inventory>(_unitAny.pInventory);
-                                    _act = new Act(_unitAny.pAct);
+                                    _act = new Act(_gameManager, _unitAny.pAct);
                                 }
 
                                 break;
@@ -151,8 +154,8 @@ namespace MapAssist.Types
         public ushort X => IsMovable() ? _path.DynamicX : _path.StaticX;
         public ushort Y => IsMovable() ? _path.DynamicY : _path.StaticY;
         public Point Position => new Point(X, Y);
-        public UnitAny ListNext => new UnitAny(_unitAny.pListNext);
-        public UnitAny RoomNext => new UnitAny(_unitAny.pRoomNext);
+        public UnitAny ListNext => new UnitAny(_gameManager, _unitAny.pListNext);
+        public UnitAny RoomNext => new UnitAny(_gameManager, _unitAny.pRoomNext);
         public List<Resist> Immunities => _immunities;
         public uint[] StateFlags => _stateFlags;
         public List<State> StateList => _stateList;
@@ -185,30 +188,27 @@ namespace MapAssist.Types
             }
             else
             {
-                using (var processContext = GameManager.GetProcessContext())
+                using (var processContext = _gameManager.GetProcessContext())
                 {
-                    var processId = processContext.ProcessId;
-                    if (GameMemory.PlayerUnits.TryGetValue(processId, out var playerUnit))
+                    var playerUnit = _gameManager.CurrentPlayerUnit;
+                    if (!Equals(playerUnit, default(UnitAny)))
                     {
-                        if (!Equals(playerUnit, default(UnitAny)))
+                        if (playerUnit.UnitId != UnitId)
                         {
-                            if (playerUnit.UnitId != UnitId)
+                            return false;
+                        }
+                        else
+                        {
+                            if (!Equals(playerUnit, default(UnitAny)))
                             {
-                                return false;
-                            }
-                            else
-                            {
-                                if (!Equals(playerUnit, default(UnitAny)))
-                                {
-                                    _isPlayerUnit = true;
-                                    return true;
-                                }
+                                _isPlayerUnit = true;
+                                return true;
                             }
                         }
                     }
                     if (IsPlayer() && _unitAny.pInventory != IntPtr.Zero)
                     {
-                        var expansionCharacter = processContext.Read<byte>(GameManager.ExpansionCheckOffset) == 1;
+                        var expansionCharacter = processContext.Read<byte>(_gameManager.ExpansionCheckOffset) == 1;
                         var userBaseOffset = 0x30;
                         var checkUser1 = 1;
                         if (expansionCharacter)

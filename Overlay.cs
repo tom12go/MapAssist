@@ -41,7 +41,7 @@ namespace MapAssist
 
         public Overlay()
         {
-            _gameDataReader = new GameDataReader();
+            _gameDataReader = new GameDataReader(0);
 
             GameOverlay.TimerService.EnableHighPrecisionTimers();
 

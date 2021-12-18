@@ -27,16 +27,18 @@ namespace MapAssist.Types
     {
         private readonly IntPtr _pRoomEx = IntPtr.Zero;
         private Structs.RoomEx _roomEx;
+        private GameManager _gameManager;
 
-        public RoomEx(IntPtr pRoomEx)
+        public RoomEx(GameManager gameManager, IntPtr pRoomEx)
         {
+            _gameManager = gameManager;
             _pRoomEx = pRoomEx;
             Update();
         }
 
         public RoomEx Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 _roomEx = processContext.Read<Structs.RoomEx>(_pRoomEx);
             }
@@ -44,6 +46,6 @@ namespace MapAssist.Types
             return this;
         }
 
-        public Level Level => new Level(_roomEx.pLevel);
+        public Level Level => new Level(_gameManager, _roomEx.pLevel);
     }
 }

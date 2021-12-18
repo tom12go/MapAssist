@@ -30,19 +30,21 @@ namespace MapAssist.Types
 {
     public class Skill : IUpdatable<Skill>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pSkills;
         private Skills _rightSkillId;
         private Skills _leftSkillId;
         private Skills _usedSkillId;
 
-        public Skill(IntPtr pSkills)
+        public Skill(GameManager gm, IntPtr pSkills)
         {
+            _gameManager = gm;
             _pSkills = pSkills;
             Update();
         }
         public Skill Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 var skillList = processContext.Read<SkillList>(_pSkills);
 

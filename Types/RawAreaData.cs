@@ -65,27 +65,51 @@ namespace MapAssist.Types
         }
     }
 
+    public class RawAdjacentLevel
+    {
+        public XY[] exits;
+        public XY origin;
+        public int width;
+        public int height;
+
+        public AdjacentLevel ToInternal(Area area)
+        {
+            return new AdjacentLevel
+            {
+                Area = area,
+                Exits = exits.Select(o => o.ToPoint()).ToArray(),
+            };
+        }
+    }
+
+
     public class RawAreaData
     {
-        public XY2 crop;
-        public XY offset;
-        public Dictionary<string, Exit> exits;
-        public int[] mapData;
+        public XY levelOrigin;
+        public Dictionary<string, RawAdjacentLevel> adjacentLevels;
+        public int[][] mapRows;
         public Dictionary<string, XY[]> npcs;
         public Dictionary<string, XY[]> objects;
 
+        //public XY2 crop;
+        //public XY offset;
+        //public Dictionary<string, Exit> exits;
+        //public int[] mapData;
+        //public Dictionary<string, XY[]> npcs;
+        //public Dictionary<string, XY[]> objects;
+
         public AreaData ToInternal(Area area)
         {
-            if (exits == null) exits = new Dictionary<string, Exit>();
+            if (adjacentLevels == null) adjacentLevels = new Dictionary<string, RawAdjacentLevel>();
             if (npcs == null) npcs = new Dictionary<string, XY[]>();
             if (objects == null) objects = new Dictionary<string, XY[]>();
 
             return new AreaData
             {
                 Area = area,
-                Origin = offset.ToPoint(),
+                Origin = levelOrigin.ToPoint(),
                 CollisionGrid = GetCollisionGid(),
-                AdjacentLevels = exits
+                AdjacentLevels = adjacentLevels
                     .Select(o =>
                     {
                         var adjacentArea = Area.None;
@@ -130,37 +154,14 @@ namespace MapAssist.Types
     
         private int[][] GetCollisionGid()
         {
-            var padding = 2;
-            var mapRows = new int[crop.y1 - crop.y0][];
-            var unwalkableTile = new int[padding].Select(_ => -1).ToArray();
-            var unwalkableRow = new int[padding].Select(_ => new int[crop.x1 - crop.x0 + padding * 2].Select(__ => -1).ToArray()).ToArray();
+            //var padding = 2;
 
-            var iy = 0;
-            var val = -1;
+            //var rows = mapRows.Length;
+            
+            //var unwalkableTile = new int[padding].Select(_ => -1).ToArray();
+            //var unwalkableRow = new int[padding].Select(_ => new int[rows + padding * 2].Select(__ => -1).ToArray()).ToArray();
 
-            foreach (var v in mapData)
-            {
-                if (mapRows[iy] == null)
-                {
-                    mapRows[iy] = new int[0];
-                }
-
-                if (v != -1)
-                {
-                    mapRows[iy] = mapRows[iy].Concat(new int[v].Select(_ => val)).ToArray();
-
-                    val = -1 - val;
-                }
-                else
-                {
-                    mapRows[iy] = unwalkableTile.Concat(mapRows[iy]).Concat(unwalkableTile).ToArray(); // Prepend and append with one unwalkable tile for improved border drawing
-
-                    iy++;
-                    val = -1;
-                }
-            }
-
-            mapRows = unwalkableRow.Concat(mapRows).Concat(unwalkableRow).ToArray(); // Prepend and append with one unwalkable row of tiles for improved border drawing
+            //var collision = unwalkableRow.Concat(mapRows).Concat(unwalkableRow).ToArray(); // Prepend and append with one unwalkable row of tiles for improved border drawing
 
             return mapRows;
         }

@@ -25,18 +25,20 @@ namespace MapAssist.Types
 {
     public class Path : IUpdatable<Path>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pPath = IntPtr.Zero;
         private Structs.Path _path;
 
-        public Path(IntPtr pPath)
+        public Path(GameManager gm, IntPtr pPath)
         {
+            _gameManager = gm;
             _pPath = pPath;
             Update();
         }
 
         public Path Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 _path = processContext.Read<Structs.Path>(_pPath);
             }
@@ -48,6 +50,6 @@ namespace MapAssist.Types
         public ushort DynamicY => _path.DynamicY;
         public ushort StaticX => _path.StaticX;
         public ushort StaticY => _path.StaticY;
-        public Room Room => new Room(_path.pRoom);
+        public Room Room => new Room(_gameManager, _path.pRoom);
     }
 }

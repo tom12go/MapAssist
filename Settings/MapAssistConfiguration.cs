@@ -71,9 +71,15 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "GameInfo", ApplyNamingConventions = false)]
         public GameInfoConfiguration GameInfo { get; set; }
 
+        [YamlMember(Alias = "ApiConfiguration", ApplyNamingConventions = false)]
+        public ApiConfiguration ApiConfiguration { get; set; }
+
         [YamlMember(Alias = "ItemLog", ApplyNamingConventions = false)]
         public ItemLogConfiguration ItemLog { get; set; }
     }
+
+
+    
 
     public class MapColorConfiguration
     {
@@ -193,6 +199,15 @@ public class GameInfoConfiguration
 
     [YamlMember(Alias = "ShowOverlayFPS", ApplyNamingConventions = false)]
     public bool ShowOverlayFPS { get; set; }
+}
+
+public class ApiConfiguration
+{
+    [YamlMember(Alias = "Endpoint", ApplyNamingConventions = false)]
+    public string Endpoint { get; set; }
+
+    [YamlMember(Alias = "Token", ApplyNamingConventions = false)]
+    public string Token { get; set; }
 }
 
 public class ItemLogConfiguration

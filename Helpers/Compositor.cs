@@ -50,8 +50,11 @@ namespace MapAssist.Helpers
         private const int WALKABLE = 0;
         private const int BORDER = 1;
 
-        public Compositor(AreaData areaData, IReadOnlyList<PointOfInterest> pointsOfInterest)
+        private GameManager _gameManager;
+
+        public Compositor(GameManager man, AreaData areaData, IReadOnlyList<PointOfInterest> pointsOfInterest)
         {
+            _gameManager = man;
             _areaData = areaData;
             _areaData.CalcViewAreas(_rotateRadians);
 
@@ -103,15 +106,15 @@ namespace MapAssist.Helpers
                         var i = imageSize.Width * 4 * y + x * 4;
                         var type = _areaData.CollisionGrid[_y][_x];
 
-                        // // Uncomment this to show a red border for debugging
-                        // if (x == 0 || y == 0 || y == imageSize.Height - 1 || x == imageSize.Width - 1)
-                        // {
-                        //     bytes[i] = 0;
-                        //     bytes[i + 1] = 0;
-                        //     bytes[i + 2] = 255;
-                        //     bytes[i + 3] = 255;
-                        //     continue;
-                        // }
+                        //// Uncomment this to show a red border for debugging
+                        //if (x == 0 || y == 0 || y == imageSize.Height - 1 || x == imageSize.Width - 1)
+                        //{
+                        //    bytes[i] = 0;
+                        //    bytes[i + 1] = 0;
+                        //    bytes[i + 2] = 255;
+                        //    bytes[i + 3] = 255;
+                        //    continue;
+                        //}
 
                         var pixelColor = type == WALKABLE && maybeWalkableColor != null ? walkableColor :
                             type == BORDER && maybeBorderColor != null ? borderColor :
@@ -359,7 +362,7 @@ namespace MapAssist.Helpers
 
         private void DrawPlayers(Graphics gfx)
         {
-            if (_gameData.Roster.EntriesByUnitId.TryGetValue(GameManager.PlayerUnit.UnitId, out var myPlayerEntry))
+            if (_gameData.Roster.EntriesByUnitId.TryGetValue(_gameManager.PlayerUnit.UnitId, out var myPlayerEntry))
             {
                 var canDrawIcon = MapAssistConfiguration.Loaded.MapConfiguration.Player.CanDrawIcon();
                 var canDrawLabel = MapAssistConfiguration.Loaded.MapConfiguration.Player.CanDrawLabel();
@@ -482,7 +485,7 @@ namespace MapAssist.Helpers
                     Color buffColor = States.StateColor(state);
                     if (state == State.STATE_CONVICTION)
                     {
-                        if (GameManager.PlayerUnit.Skill.RightSkillId == Skills.SKILL_CONVICTION) //add check later for if infinity is equipped
+                        if (_gameManager.PlayerUnit.Skill.RightSkillId == Skills.SKILL_CONVICTION) //add check later for if infinity is equipped
                         {
                             buffColor = States.BuffColor;
                         } else

@@ -25,18 +25,20 @@ namespace MapAssist.Types
 {
     public class Level : IUpdatable<Level>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pLevel = IntPtr.Zero;
         private Structs.Level _level;
 
-        public Level(IntPtr pLevel)
+        public Level(GameManager gm, IntPtr pLevel)
         {
+            _gameManager = gm;
             _pLevel = pLevel;
             Update();
         }
 
         public Level Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 _level = processContext.Read<Structs.Level>(_pLevel);
             }

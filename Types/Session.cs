@@ -30,19 +30,21 @@ namespace MapAssist.Types
 {
     public class Session : IUpdatable<Session>
     {
+        private GameManager _gameManager;
         private readonly IntPtr _pSession;
         private string _gameName;
         private string _gamePass;
         private string _gameIP;
 
-        public Session(IntPtr pSession)
+        public Session(GameManager gm, IntPtr pSession)
         {
+            _gameManager = gm;
             _pSession = pSession;
             Update();
         }
         public Session Update()
         {
-            using (var processContext = GameManager.GetProcessContext())
+            using (var processContext = _gameManager.GetProcessContext())
             {
                 var sessionData = processContext.Read<Structs.Session>(_pSession);
 
