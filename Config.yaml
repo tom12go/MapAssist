@@ -31,13 +31,13 @@ RenderingConfiguration:
   ## OverlayMode - Overlay map over in-game map / can be hidden with hotkey (ToggleKey)
   OverlayMode: true
   ## Positions - Options are: Center, TopLeft, TopRight
-  Position: Center
+  Position: TopLeft
   ## ToggleViaInGameMap - Auto-hide map overlay when the in-game map is hidden
   ToggleViaInGameMap: false
   ## ToggleViaInGamePanels - Auto-hide overlay when in-game panels/menus are opened
   ToggleViaInGamePanels: true
   ## Size - Overlay map maximum size
-  Size: 800
+  Size: 400
   ## ZoomLevel - Zoom level / can zoom in/out with hotkeys (ZoomInKey, ZoomOutKey)
   ZoomLevel: 1
   ## BuffPosition - Options are: Player, Top, Bottom
@@ -160,8 +160,8 @@ ItemLog:
 
 ## MapColorConfiguration - Color schema for drawing overlay map
 MapColorConfiguration:
-  Walkable:
-  Border: '255, 255, 255'
+  Walkable: '96, 96, 96'
+  Border: 
 
 ## GameInfo - Displaying game server IP address
 GameInfo:
@@ -182,3 +182,7 @@ UpdateTime: 30
 
 ## ClearPrefetchedOnAreaChange - Advanced setting for clearing prefetched cache
 ClearPrefetchedOnAreaChange: false
+
+ApiConfiguration:
+  Endpoint: 'http://localhost:9001/'
+  Token: ''

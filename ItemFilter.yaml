@@ -53,7 +53,7 @@ x-bases:
    Sockets: [0, 4]
 # This ring rule will show all magic, rare, and unique rings
 Ring:
- - Qualities: [magic, rare, unique]
+ - Qualities: [rare, unique]
 
 ### Some items are inactive. 
 ### To activate them for the loot log, remove the ## in front of them. 
@@ -134,7 +134,6 @@ Matriarchal Javelin:
 ### Misc
 Amulet:
  - Qualities: 
-   - magic
    - rare
    - unique
    - set
@@ -146,7 +145,7 @@ Jewel:
 Small Charm:
  - Qualities: [magic, unique]
 Large Charm:
- - Qualities: unique
+ - Qualities: [magic, unique]
 Grand Charm:
  - Qualities: [magic, unique]
 Key of Terror:
