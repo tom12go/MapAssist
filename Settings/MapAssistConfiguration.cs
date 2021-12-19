@@ -28,9 +28,9 @@ namespace MapAssist.Settings
     public class MapAssistConfiguration
     {
         public static MapAssistConfiguration Loaded { get; set; }
-        public static void Load()
+        public static void Load(string dir)
         {
-            Loaded = ConfigurationParser<MapAssistConfiguration>.ParseConfigurationMain(Properties.Resources.Config, $"./Config.yaml");
+            Loaded = ConfigurationParser<MapAssistConfiguration>.ParseConfigurationMain(Properties.Resources.Config, System.IO.Path.Combine(dir , $"Config.yaml"));
         }
 
         public void Save()

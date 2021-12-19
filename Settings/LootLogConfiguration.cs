@@ -9,9 +9,9 @@ namespace MapAssist.Settings
     {
         public static Dictionary<string, List<ItemFilter>> Filters { get; set; }
 
-        public static void Load()
+        public static void Load(string dir)
         {
-            Filters = ConfigurationParser<Dictionary<string, List<ItemFilter>>>.ParseConfigurationFile($"./{MapAssistConfiguration.Loaded.ItemLog.FilterFileName}");
+            Filters = ConfigurationParser<Dictionary<string, List<ItemFilter>>>.ParseConfigurationFile(System.IO.Path.Combine(dir, $"{MapAssistConfiguration.Loaded.ItemLog.FilterFileName}"));
         }
     }
 

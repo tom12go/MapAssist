@@ -14,7 +14,7 @@ namespace MapAssist
         public static bool _configurationOk = false;
         private static readonly object _lock = new object();
 
-        public static D2ToolboxCore.IComponent NewComponent(uint pid)
+        public static D2ToolboxCore.IComponent NewComponent(uint pid, string dir)
         {
             lock (_lock)
             {
@@ -22,7 +22,7 @@ namespace MapAssist
                 {
                     if (!_configurationOk)
                     {
-                        _configurationOk = LoadLoggingConfiguration() && LoadMainConfiguration() && LoadLootLogConfiguration();
+                        _configurationOk = LoadLoggingConfiguration() && LoadMainConfiguration(dir) && LoadLootLogConfiguration(dir);
                     }
                     if (!_configurationOk)
                     {
@@ -38,12 +38,12 @@ namespace MapAssist
             }
         }
 
-        private static bool LoadMainConfiguration()
+        private static bool LoadMainConfiguration(string dir)
         {
             var configurationOk = false;
             try
             {
-                MapAssistConfiguration.Load();
+                MapAssistConfiguration.Load(dir);
                 MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize = MapAssistConfiguration.Loaded.RenderingConfiguration.Size;
                 configurationOk = true;
             }
@@ -65,12 +65,12 @@ namespace MapAssist
             return configurationOk;
         }
 
-        private static bool LoadLootLogConfiguration()
+        private static bool LoadLootLogConfiguration(string relPath)
         {
             var configurationOk = false;
             try
             {
-                LootLogConfiguration.Load();
+                LootLogConfiguration.Load(relPath);
                 Items.LoadLocalization();
                 configurationOk = true;
             }
