@@ -160,8 +160,8 @@ ItemLog:
 
 ## MapColorConfiguration - Color schema for drawing overlay map
 MapColorConfiguration:
-  Walkable: '96, 96, 96'
-  Border: 
+  Walkable:
+  Border:  '96, 96, 96'
 
 ## GameInfo - Displaying game server IP address
 GameInfo:
