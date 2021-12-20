@@ -117,7 +117,7 @@ namespace MapAssist.Helpers
                         //}
 
                         var pixelColor = type == WALKABLE && maybeWalkableColor != null ? walkableColor :
-                            type == BORDER && maybeBorderColor != null ? borderColor :
+                            (type > BORDER && type != 5) && maybeBorderColor != null ? borderColor :  
                             Color.Transparent;
 
                         if (pixelColor != Color.Transparent)
@@ -132,7 +132,7 @@ namespace MapAssist.Helpers
             }
 
             gamemapDX.CopyFromMemory(bytes, imageSize.Width * 4);
-        }
+        } 
 
         public void DrawGamemap(Graphics gfx)
         {

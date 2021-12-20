@@ -84,7 +84,7 @@ namespace MapAssist.Types
 
                         if (offsetInBounds && CollisionGrid[dy][dx] == 0)
                         {
-                            CollisionGrid[y][x] = 1; // Wall
+                            CollisionGrid[y][x] = 2; // Wall
                             points.Add(new Point(x, y));
                             break;
                         }
