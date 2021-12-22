@@ -49,8 +49,12 @@ x-bases:
   Qualities: [normal, superior]
   Sockets: [4]
  - &pally-shield-base
-   Qualities: [normal, superior]
-   Sockets: [0, 4]
+  Qualities: [normal, superior]
+  Sockets: [0, 4]
+ - &pally-scp-base
+  Qualities: [normal, superior]
+  Sockets: [0, 4, 5]
+
 # This ring rule will show all magic, rare, and unique rings
 Ring:
  - Qualities: [rare, unique]
@@ -265,8 +269,34 @@ Sacred Targe:
 Sacred Rondache:
  - *pally-shield-base
 
+### Paladin Weapon
+Scepter:
+ - Qualities: [magic, rare]
+Rune Scepter:
+ - Qualities: [magic, rare]
+Mighty Scepter:
+ - Qualities: [magic, rare]
+
+Grand Scepter:
+ - Qualities: [magic, rare]
+Holy Water Sprinkler:
+ - Qualities: [magic, rare]
+Seraph Rod:
+ - Qualities: [magic, rare]
+
+War Scepter:
+ - *pally-scp-base
+ - Qualities: [magic, rare]
+Divine Scepter:
+ - *pally-scp-base
+ - Qualities: [magic, rare]
+Caduceus:
+ - *pally-scp-base
+ - Qualities: [magic, rare]
+
 ### Runes
 Hel Rune:
+Lem Rune:
 Pul Rune:
 Um Rune:
 Mal Rune:
