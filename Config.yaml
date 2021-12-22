@@ -5,7 +5,6 @@ HotkeyConfiguration:
   ToggleKey: '\'
   ZoomInKey: '+'
   ZoomOutKey: '-'
-  GameInfoKey: '['
 
 ## PrefetchAreas - Areas to preload so that they're hot and ready as soon as you go to them
 PrefetchAreas:
@@ -125,9 +124,18 @@ MapConfiguration:
     IconShape: Square
     IconSize: 4
   NormalChest:
-    IconColor: '96, 96, 96'
+    IconColor: '17, 128, 0'
     IconShape: Square
     IconSize: 3
+  LockedChest:
+    IconColor: '128, 0, 0'
+    IconShape: Square
+    IconSize: 3
+  TrappedChest:
+    IconColor: '255, 0, 0'
+    IconShape: SquareOutline
+    IconSize: 4
+    IconThickness: 1
   Shrine:
     IconColor: '255, 218, 100'
     IconShape: Polygon
@@ -163,14 +171,18 @@ MapColorConfiguration:
   Walkable:
   Border:  '96, 96, 96'
 
-## GameInfo - Displaying game server IP address
+## GameInfo - Display setting for game info
 GameInfo:
-  Enabled: true
+  ## ShowGameIP - Display game server IP address
+  ShowGameIP: true
+  ## HuntingIP - Set an IP address to display in green instead of red
+  HuntingIP: 'x.x.x.x'
+  ## ShowAreaLevel - Display current area and alvl
+  ShowAreaLevel: true
   ## ShowOverlayFPS - Developer setting, probably not useful
   ShowOverlayFPS: false
-
-## HuntingIP - Set an IP address to display in green instead of red
-HuntingIP: 'x.x.x.x'
+  LabelFont: "Helvetica"
+  LabelFontSize: 14
 
 ## Path to D2LOD installation. Optional.
 ## Should only need to provide if we are not able to look it up

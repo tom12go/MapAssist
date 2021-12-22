@@ -53,6 +53,7 @@ namespace MapAssist
 
             _window.DrawGraphics += _window_DrawGraphics;
             _window.DestroyGraphics += _window_DestroyGraphics;
+
         }
 
         private void _window_DrawGraphics(object sender, DrawGraphicsEventArgs e)
@@ -155,11 +156,6 @@ namespace MapAssist
                         MapAssistConfiguration.Loaded.RenderingConfiguration.Size -=
                           (int)(MapAssistConfiguration.Loaded.RenderingConfiguration.InitialSize * 0.05f);
                     }
-                }
-
-                if (args.KeyChar == MapAssistConfiguration.Loaded.HotkeyConfiguration.GameInfoKey)
-                {
-                    MapAssistConfiguration.Loaded.GameInfo.Enabled = !MapAssistConfiguration.Loaded.GameInfo.Enabled;
                 }
             }
         }

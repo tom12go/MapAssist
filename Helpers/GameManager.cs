@@ -89,7 +89,7 @@ namespace MapAssist.Helpers
                     _processContext = new ProcessContext(_gameProcess); // Rarely, the VirtualMemoryRead will cause an error, in that case return a null instead of a runtime error. The next frame will try again.
                     return _processContext;
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     return null;
                 }

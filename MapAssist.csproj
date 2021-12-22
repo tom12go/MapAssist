@@ -158,6 +158,7 @@
     <Compile Include="Structs\Level.cs" />
     <Compile Include="Structs\MonsterData.cs" />
     <Compile Include="Structs\ObjectData.cs" />
+    <Compile Include="Structs\PlayerInfo.cs" />
     <Compile Include="Structs\RosterMember.cs" />
     <Compile Include="Structs\Path.cs" />
     <Compile Include="Structs\Room.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Structs\Skills.cs" />
     <Compile Include="Structs\UnitAny.cs" />
     <Compile Include="Structs\UnitHashTable.cs" />
+    <Compile Include="Types\Chest.cs" />
     <Compile Include="Types\Items.cs" />
     <Compile Include="Types\Roster.cs" />
     <Compile Include="Types\Session.cs" />

@@ -38,6 +38,7 @@ namespace MapAssist.Types
         private MonsterData _monsterData;
         private ItemData _itemData;
         private ObjectData _objectData;
+        private ObjectTxt _objectTxt;
         private Dictionary<Stat, int> _statList;
         private List<Resist> _immunities;
         private uint[] _stateFlags;
@@ -88,6 +89,10 @@ namespace MapAssist.Types
                         switch (_unitAny.UnitType)
                         {
                             case UnitType.Player:
+                                _name = Encoding.ASCII.GetString(processContext.Read<byte>(_unitAny.pUnitData, 16))
+                                    .TrimEnd((char)0);
+                                _inventory = processContext.Read<Inventory>(_unitAny.pInventory);
+                                _act = new Act(_gameManager, _unitAny.pAct);
                                 if (IsPlayer())
                                 {
                                     if (IsPlayerUnit())
@@ -100,14 +105,12 @@ namespace MapAssist.Types
                                     _inventory = processContext.Read<Inventory>(_unitAny.pInventory);
                                     _act = new Act(_gameManager, _unitAny.pAct);
                                 }
-
                                 break;
                             case UnitType.Monster:
                                 if (IsMonster())
                                 {
                                     _monsterData = processContext.Read<MonsterData>(_unitAny.pUnitData);
                                 }
-
                                 break;
                             case UnitType.Item:
                                 if (MapAssistConfiguration.Loaded.ItemLog.Enabled)
@@ -122,6 +125,10 @@ namespace MapAssist.Types
                                 break;
                             case UnitType.Object:
                                 _objectData = processContext.Read<ObjectData>(_unitAny.pUnitData);
+                                if (_objectData.pObjectTxt != IntPtr.Zero)
+                                {
+                                    _objectTxt = processContext.Read<ObjectTxt>(_objectData.pObjectTxt);
+                                }
                                 break;
                         }
                         _updated = true;
@@ -146,11 +153,11 @@ namespace MapAssist.Types
         public MonsterData MonsterData => _monsterData;
         public ItemData ItemData => _itemData;
         public ObjectData ObjectData => _objectData;
+        public ObjectTxt ObjectTxt => _objectTxt;
         public Act Act => _act;
         public Path Path => _path;
         public IntPtr StatsListExPtr => _unitAny.pStatsListEx;
         public Inventory Inventory => _inventory;
-        public uint OwnerType => _unitAny.OwnerType;
         public ushort X => IsMovable() ? _path.DynamicX : _path.StaticX;
         public ushort Y => IsMovable() ? _path.DynamicY : _path.StaticY;
         public Point Position => new Point(X, Y);
@@ -177,7 +184,7 @@ namespace MapAssist.Types
 
         public bool IsPlayer()
         {
-            return UnitType == UnitType.Player;
+            return UnitType == UnitType.Player && _unitAny.pAct != IntPtr.Zero;
         }
 
         public bool IsPlayerUnit()
@@ -208,7 +215,9 @@ namespace MapAssist.Types
                     }
                     if (IsPlayer() && _unitAny.pInventory != IntPtr.Zero)
                     {
-                        var expansionCharacter = processContext.Read<byte>(_gameManager.ExpansionCheckOffset) == 1;
+                        var playerInfoPtr = processContext.Read<PlayerInfo>(_gameManager.ExpansionCheckOffset);
+                        var playerInfo = processContext.Read<PlayerInfoStrc>(playerInfoPtr.pPlayerInfo);
+                        var expansionCharacter = playerInfo.Expansion;
                         var userBaseOffset = 0x30;
                         var checkUser1 = 1;
                         if (expansionCharacter)
@@ -242,6 +251,11 @@ namespace MapAssist.Types
                 return true;
             }
             return false;
+        }
+        public bool IsChest()
+        {
+            return UnitType == UnitType.Object && _objectData.pObjectTxt != IntPtr.Zero && _unitAny.Mode == 0 &&
+                Chest.NormalChests.Contains((GameObject)_objectTxt.Id);
         }
         public bool IsMonster()
         {
