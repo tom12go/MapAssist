@@ -8,16 +8,20 @@ namespace MapAssist.Files
     public class FileManager
     {
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        private string _filePathRelative;
         private string _fullPath;
 
         public FileManager(string fileName)
         {
-            _filePathRelative = fileName;
-            _fullPath = System.IO.Directory.GetCurrentDirectory() + _filePathRelative.Substring(1);
+            if (Path.IsPathRooted(fileName))
+            {
+                _fullPath = fileName;
+            } else
+            {
+                _fullPath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+            }
         }
 
-        public string GetPath() { return _filePathRelative; }
+        public string GetPath() { return _fullPath; }
         public string GetAbsolutePath() { return _fullPath; }
         public bool FileExists()
         {
@@ -75,11 +79,11 @@ namespace MapAssist.Files
             catch (Exception e)
             {
                 // Let the user know what went wrong.
-                _log.Debug(e, $"The file {_filePathRelative} could not be read.");
+                _log.Debug(e, $"The file {_fullPath} could not be read.");
             }
             if (sb.ToString().Length == 0)
             {
-                _log.Debug($"The file {_filePathRelative} was empty...");
+                _log.Debug($"The file {_fullPath} was empty...");
             }
 
             return sb.ToString();
@@ -89,7 +93,7 @@ namespace MapAssist.Files
         {
             try
             {
-                using (StreamWriter sw = File.CreateText(_filePathRelative))
+                using (StreamWriter sw = File.CreateText(_fullPath))
                 {
                     sw.WriteLine(content);
                     sw.Close();
@@ -98,7 +102,7 @@ namespace MapAssist.Files
             catch (Exception e)
             {
                 // Let the user know what went wrong.
-                _log.Debug(e, $"The file {_filePathRelative} could not be written.");
+                _log.Debug(e, $"The file {_fullPath} could not be written.");
                 return false;
             }
             return true;
