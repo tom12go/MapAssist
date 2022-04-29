@@ -280,3 +280,8 @@ GameInfo:
 D2Path: ''
 LanguageCode: enUS
 DPIAware: false
+
+ApiConfiguration:
+  Endpoint: 'http://localhost:9001/'
+  Token: ''
+

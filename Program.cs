@@ -90,24 +90,6 @@ namespace MapAssist
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
 
-                    try
-                    {
-                        if (!MapApi.StartPipedChild())
-                        {
-                            MessageBox.Show($"{messageBoxTitle}: Unable to start d2mapapi pipe", messageBoxTitle, MessageBoxButtons.OK);
-                            return;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _log.Fatal(e);
-                        _log.Fatal(e, "Unable to start d2mapapi pipe.");
-
-                        var message = e.Message + Environment.NewLine + Environment.NewLine + e.StackTrace;
-                        MessageBox.Show(message, $"{messageBoxTitle}: Unable to start d2mapapi pipe", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
                     var contextMenu = new ContextMenuStrip();
 
                     var configMenuItem = new ToolStripMenuItem("Config", null, ShowConfigEditor);
@@ -307,7 +289,6 @@ namespace MapAssist
 
             overlay.Dispose();
             GameManager.Dispose();
-            MapApi.Dispose();
             globalHook.Dispose();
             trayIcon.Dispose();
 
