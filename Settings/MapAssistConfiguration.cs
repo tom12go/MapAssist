@@ -71,6 +71,9 @@ namespace MapAssist.Settings
         [YamlMember(Alias = "D2Path", ApplyNamingConventions = false)]
         public string D2LoDPath { get; set; }
 
+        [YamlMember(Alias = "ApiConfiguration", ApplyNamingConventions = false)]
+        public ApiConfiguration ApiConfiguration { get; set; }
+
         [YamlMember(Alias = "LanguageCode", ApplyNamingConventions = false)]
         public Locale LanguageCode { get; set; }
 
@@ -329,7 +332,14 @@ public class GameInfoConfiguration
     [YamlMember(Alias = "LabelTextShadow", ApplyNamingConventions = false)]
     public bool LabelTextShadow { get; set; }
 }
+public class ApiConfiguration
+{
+    [YamlMember(Alias = "Endpoint", ApplyNamingConventions = false)]
+    public string Endpoint { get; set; }
 
+    [YamlMember(Alias = "Token", ApplyNamingConventions = false)]
+    public string Token { get; set; }
+}
 public class ItemLogConfiguration
 {
     [YamlMember(Alias = "Enabled", ApplyNamingConventions = false)]
