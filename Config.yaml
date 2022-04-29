@@ -270,7 +270,7 @@ ItemLog:
   LabelFontSize: 16
   LabelTextShadow: true
 MapColorConfiguration:
-  Border: 255, 255, 255
+  Border: 96, 96, 96
 GameInfo:
   Position: TopLeft
   ShowGameName: true
@@ -284,5 +284,10 @@ GameInfo:
   LabelFontSize: 16
   LabelTextShadow: true
 D2Path: ''
-LanguageCode: enUS
+LanguageCode: zhCN
 DPIAware: false
+
+ApiConfiguration:
+  Endpoint: 'http://localhost:9001/'
+  Token: ''
+
