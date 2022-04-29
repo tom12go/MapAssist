@@ -134,6 +134,7 @@
     <Compile Include="Helpers\ItemExport.cs" />
     <Compile Include="Helpers\Localization.cs" />
     <Compile Include="Helpers\LootFilter.cs" />
+    <Compile Include="Helpers\MapApiHttp.cs" />
     <Compile Include="Helpers\Pattern.cs" />
     <Compile Include="Helpers\ProcessContext.cs" />
     <Compile Include="Helpers\QualityLevels.cs" />
@@ -142,7 +143,6 @@
     <Compile Include="Overlay.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\PointOfInterestHandler.cs" />
-    <Compile Include="Helpers\MapApi.cs" />
     <Compile Include="Helpers\Compositor.cs" />
     <Compile Include="Helpers\WindowsExternal.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -591,9 +591,6 @@
     <None Include="Resources\PhoenixStrike.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="MAServer.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <EmbeddedResource Include="Resources\InventoryExportTemplate.html" />
   </ItemGroup>
   <ItemGroup>
