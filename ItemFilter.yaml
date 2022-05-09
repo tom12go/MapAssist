@@ -68,6 +68,9 @@ x-bases:
     Ethereal: true
     Qualities: [normal, superior]
     Sockets: [4]
+  - &pally-scp-base
+    Qualities: [normal, superior]
+    Sockets: [0, 4, 5]
 
 # This ring rule will show all unidentified magic, rare, and unique rings that drop on the ground
 Ring:
@@ -257,6 +260,32 @@ Paladin Shields:
     Qualities: [normal, superior]
     All Resist: 25
     Sockets: [0, 4]
+
+### Paladin Weapons
+Scepter:
+  - Qualities: [magic, rare]
+Rune Scepter:
+  - Qualities: [magic, rare]
+Mighty Scepter:
+  - Qualities: [magic, rare]
+
+Grand Scepter:
+  - Qualities: [magic, rare]
+Holy Water Sprinkler:
+  - Qualities: [magic, rare]
+Seraph Rod:
+  - Qualities: [magic, rare]
+
+War Scepter:
+  - *pally-scp-base
+  - Qualities: [magic, rare]
+Divine Scepter:
+  - *pally-scp-base
+  - Qualities: [magic, rare]
+Caduceus:
+  - *pally-scp-base
+  - Qualities: [magic, rare]
+
 
 ### Runes
 Hel Rune:
