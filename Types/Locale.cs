@@ -16,6 +16,7 @@ namespace MapAssist.Types
         koKR,
         jaJP,
         zhCN,
+        zhTW,
     };
 
     public static class LocaleExtensions
@@ -34,6 +35,7 @@ namespace MapAssist.Types
             [Locale.koKR] = "Korean (South Korea)",
             [Locale.jaJP] = "Japanese (Japan)",
             [Locale.zhCN] = "Chinese (China)",
+            [Locale.zhTW] = "Chinese Traditional (China)",
         };
 
         public static string Name(this Locale locale)
@@ -44,7 +46,7 @@ namespace MapAssist.Types
         public static bool IsValid(this Locale locale)
         {
             var intLocale = (uint)locale;
-            return intLocale >= 0 && intLocale <= 11;
+            return intLocale >= 0 && intLocale <= 12;
         }
     }
 }
