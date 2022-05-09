@@ -68,6 +68,9 @@ x-bases:
     Ethereal: true
     Qualities: [normal, superior]
     Sockets: [4]
+  - &pally-scp-base
+    Qualities: [normal, superior]
+    Sockets: [0, 4, 5]
 
 # This ring rule will show all unidentified magic, rare, and unique rings that drop on the ground
 Ring:
@@ -138,6 +141,7 @@ Loricated Mail:
   - *merc-arm-base
 Great Hauberk:
   - *merc-arm-base
+  - *player-arm-base
 Boneweave:
   - *merc-arm-base
 Balrog Skin:
@@ -172,6 +176,16 @@ Phase Blade:
 Matriarchal Javelin:
   - Qualities: [magic, rare]
   - Qualities: unique # Thunderstroke
+Matriarchal Spear: # 矛马无限
+  - Qualities: [normal, superior]
+    Sockets: [0, 4]
+    Class Skill Tree:
+        Amazon Javelin And Spear: 3
+Grand Matron Bow:
+  - Qualities: [normal, superior]
+    Sockets: [0, 4, 5] # 信心4，迷雾5
+    Class Skill Tree:
+        Amazon Bow And Crossbow: 3
 Assassin Katars:
   - Tiers: [exceptional, elite]
     Qualities: [normal, superior]
@@ -257,6 +271,32 @@ Paladin Shields:
     Qualities: [normal, superior]
     All Resist: 25
     Sockets: [0, 4]
+
+### Paladin Weapons
+Scepter:
+  - Qualities: [rare]
+Rune Scepter:
+  - Qualities: [magic, rare]
+Mighty Scepter:
+  - Qualities: [magic, rare]
+
+Grand Scepter:
+  - Qualities: [rare]
+Holy Water Sprinkler:
+  - Qualities: [magic, rare]
+Seraph Rod:
+  - Qualities: [magic, rare]
+
+War Scepter:
+  - *pally-scp-base
+  - Qualities: [rare]
+Divine Scepter:
+  - *pally-scp-base
+  - Qualities: [magic, rare]
+Caduceus:
+  - *pally-scp-base
+  - Qualities: [magic, rare]
+
 
 ### Runes
 Hel Rune:
